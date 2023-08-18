@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 Joern Barthel
+// SPDX-License-Identifier: Apache-2.0
+
 package ykoath
 
 import (
@@ -5,7 +8,7 @@ import (
 )
 
 type tv struct {
-	tag   byte
+	tag   tag
 	value []byte
 }
 
@@ -13,11 +16,10 @@ type tvs []tv
 
 // read will read a number of tagged values from a buffer
 func read(buf []byte) (tvs tvs) {
-
 	var (
 		idx    int
 		length int
-		tag    byte
+		tagv   byte
 		value  []byte
 	)
 
@@ -27,31 +29,29 @@ func read(buf []byte) (tvs tvs) {
 			return tvs
 		}
 
-		// read the tag
-		tag = buf[idx]
+		// Read the tag
+		tagv = buf[idx]
 		idx++
 
-		// read the length
+		// Read the length
 		length = int(buf[idx])
 		idx++
 
-		// read the value
+		// Read the value
 		value = buf[idx : idx+length]
 		idx = idx + length
 
-		// append the result
+		// Append the result
 		tvs = append(tvs, tv{
-			tag:   tag,
+			tag:   tag(tagv),
 			value: value,
 		})
 
 	}
-
 }
 
 // Write produces a tlv or lv packet (if the tag is 0)
-func write(tag byte, values ...[]byte) []byte {
-
+func write(tag tag, values ...[]byte) []byte {
 	var (
 		buf    []byte
 		length int
@@ -59,8 +59,7 @@ func write(tag byte, values ...[]byte) []byte {
 	)
 
 	for _, value := range values {
-
-		// skip nil values (useful for optional tlv segments)
+		// Skip nil values (useful for optional tlv segments)
 		if value == nil {
 			continue
 		}
@@ -70,15 +69,14 @@ func write(tag byte, values ...[]byte) []byte {
 
 	}
 
-	// write the tag unless we skip it (useful for reusing Write for sending the
-	// APDU)
+	// Write the tag unless we skip it (useful for reusing Write for sending the APDU)
 	if tag != 0x00 {
-		data = append(data, tag)
+		data = append(data, byte(tag))
 	}
 
-	// write some length unless this is a one byte value (e.g. for the PUT
+	// Write some length unless this is a one byte value (e.g. for the PUT
 	// instruction's "property" byte)
-	if length > 1 {
+	if length != 1 {
 		data = append(data, byte(length))
 	}
 
@@ -87,5 +85,4 @@ func write(tag byte, values ...[]byte) []byte {
 	}
 
 	return append(data, buf...)
-
 }

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 Joern Barthel
+// SPDX-License-Identifier: Apache-2.0
+
 package ykoath
 
 import (
@@ -13,22 +16,19 @@ type Name struct {
 
 // String returns a string representation of the algorithm
 func (n *Name) String() string {
-	return fmt.Sprintf("%s (%s %s)", n.Name, n.Algorithm.String(), n.Type.String())
+	return fmt.Sprintf("%s (%s)", n.Name, n.Type.String())
 }
 
 // List sends a "LIST" instruction, return a list of OATH credentials
 func (o *OATH) List() ([]*Name, error) {
-
 	var names []*Name
 
-	res, err := o.send(0x00, 0xa1, 0x00, 0x00)
-
+	res, err := o.send(0x00, insList, 0x00, 0x00)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, tv := range res {
-
 		switch tv.tag {
 		case 0x72:
 
@@ -43,9 +43,7 @@ func (o *OATH) List() ([]*Name, error) {
 		default:
 			return nil, fmt.Errorf(errUnknownTag, tv.tag)
 		}
-
 	}
 
 	return names, nil
-
 }

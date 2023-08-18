@@ -1,62 +1,8 @@
-# ykoath
+# go-token
 
-[![Documentation](https://godoc.org/github.com/yawn/ykoath?status.svg)](http://godoc.org/github.com/yawn/ykoath) [![Go Report Card](https://goreportcard.com/badge/github.com/yawn/ykoath)](https://goreportcard.com/report/github.com/yawn/ykoath) [![Build Status](https://travis-ci.org/yawn/ykoath.svg?branch=master)](https://travis-ci.org/yawn/ykoath) [![Build status windows](https://ci.appveyor.com/api/projects/status/50vxo9e5jqql3y2b?svg=true)](https://ci.appveyor.com/project/yawn/ykoath)
+# Install
 
-The package `ykoath` implements the Yubikey [YOATH protocol](https://developers.yubico.com/OATH/YKOATH_Protocol.html) over USB with the following exceptions:
-
-* No support for HOTP (only TOTP)
-* No support for `SET CODE` and subsequently no support for `VALIDATE` and `SELECT` challenges - no authentication schema except requiring touch is supported
-* No support for `RESET` (removing all state from device)
-
-## Example usage
-
-```
-
-logger := log.New(os.Stderr, "", log.LstdFlags)
-
-oath, err := ykoath.New()
-
-if err != nil {
-	log.Fatal(err)
-}
-
-oath.Debug = logger
-
-defer oath.Close()
-
-_, err = oath.Select()
-
-if err != nil {
-	logger.Fatal(errors.Wrapf(err, "failed to select"))
-}
-
-names, err := oath.List()
-
-if err != nil {
-	logger.Fatal(errors.Wrapf(err, "failed to list"))
-}
-
-for _, name := range names {
-
-	calc, err := oath.Calculate(name.Name, func(name string) error {
-		fmt.Printf("*** PLEASE TOUCH YOUR YUBIKEY TO UNLOCK %q ***\n", name)
-		return nil
-	})
-
-	if err != nil {
-		logger.Fatal(errors.Wrapf(err, "failed to calculate name for %q", name.Name))
-	}
-
-	fmt.Printf("Got one-time-password %s for %q\n", calc, name)
-
-}
-
-if err := oath.Put("test", ykoath.HmacSha1, ykoath.Totp, 6, []byte("open sesame"), true); err != nil {
-	logger.Fatal(err)
-}
-
-if err := oath.Put("test2", ykoath.HmacSha1, ykoath.Totp, 6, []byte("open sesame"), true); err != nil {
-	logger.Fatal(err)
-}
-
+```bash
+apt-get install \
+    libpcsclite-dev
 ```
