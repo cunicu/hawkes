@@ -51,14 +51,13 @@ func (o *OATH) calculate(name string, challenge []byte, truncate bool) ([]byte, 
 
 	for _, tv := range res {
 		switch tv.tag {
-
 		case tagResponse, tagTruncated:
 			digits := int(tv.value[0])
 			hash := tv.value[1:]
 			return hash, digits, nil
 
 		default:
-			return nil, 0, fmt.Errorf(errUnknownTag, tv.tag)
+			return nil, 0, fmt.Errorf("%w: %x", errUnknownTag, tv.tag)
 		}
 	}
 
