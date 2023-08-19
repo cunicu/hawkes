@@ -1,0 +1,60 @@
+# SPDX-FileCopyrightText: 2023 Steffen Vogel <post@steffenvogel.de>
+# SPDX-License-Identifier: Apache-2.0
+
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json
+---
+name: Tests
+    
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version-file: go.mod
+        check-latest: true
+
+    - name: Install Go dependencies
+      run: |
+        go install github.com/onsi/ginkgo/v2/ginkgo
+
+    - name: Install system dependencies
+      run: sudo apt-get install -y
+            libpcsclite-dev
+
+    - name: Run integration tests
+      run: sudo --preserve-env env "PATH=$PATH"
+        ginkgo run
+          -r
+          --label-filter='integration'
+          --procs=4
+          --compilers=4
+          --randomize-all
+          --randomize-suites
+          --keep-going
+          --cover
+          --coverpkg=./...
+          --coverprofile=integration_cover.profile
+          --race
+          --trace
+          --json-report=report.json
+          --timeout=10m
+      env:
+        # Pass token via environment variable to avoid GitHub API rate-limit
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Report integration test coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: integration_cover.profile
+        token: ${{ secrets.CODECOV_TOKEN }}        
