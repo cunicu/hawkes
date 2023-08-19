@@ -4,31 +4,32 @@
 package ykoath
 
 import (
-	"crypto/sha1"
+	"crypto/sha1" //nolint:gosec
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"hash"
 )
 
-const errNametooLong = "name too long (%d > 64)"
+var errNametooLong = errors.New("name too long")
 
 // Put sends a "PUT" instruction, storing a new / overwriting an existing OATH
 // credentials with an algorithm and type, 6 or 8 digits one-time password,
 // shared secrets and touch-required bit
 func (o *OATH) Put(name string, alg Algorithm, typ Type, key []byte, touch bool, digits int) error {
 	if l := len(name); l > 64 {
-		return fmt.Errorf(errNametooLong, l)
+		return fmt.Errorf("%w  (%d > 64)", errNametooLong, l)
 	}
 
 	var h hash.Hash
 	switch alg {
-	case HMAC_SHA1:
-		h = sha1.New()
-	case HMAC_SHA256:
+	case HMACSHA1:
+		h = sha1.New() //nolint:gosec
+	case HMACSHA256:
 		h = sha256.New()
-	case HMAC_SHA512:
+	case HMACSHA512:
 		h = sha512.New()
 	}
 

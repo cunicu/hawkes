@@ -7,12 +7,12 @@
 package ykoath
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/ebfe/scard"
-	"github.com/pkg/errors"
 )
 
 type (
@@ -72,35 +72,34 @@ type OATH struct {
 	context context
 }
 
-const (
-	errFailedToConnect            = "failed to connect to reader"
-	errFailedToDisconnect         = "failed to disconnect from reader"
-	errFailedToEstablishContext   = "failed to establish context"
-	errFailedToListReaders        = "failed to list readers"
-	errFailedToListSuitableReader = "no suitable reader found (out of %d readers)"
-	errFailedToReleaseContext     = "failed to release context"
-	errFailedToTransmit           = "failed to transmit APDU"
-	errUnknownTag                 = "unknown tag (%x)"
+var (
+	errFailedToConnect            = errors.New("failed to connect to reader")
+	errFailedToDisconnect         = errors.New("failed to disconnect from reader")
+	errFailedToEstablishContext   = errors.New("failed to establish context")
+	errFailedToListReaders        = errors.New("failed to list readers")
+	errFailedToListSuitableReader = errors.New("no suitable reader found")
+	errFailedToReleaseContext     = errors.New("failed to release context")
+	errFailedToTransmit           = errors.New("failed to transmit APDU")
+	errUnknownTag                 = errors.New("unknown tag")
 )
 
 // New initializes a new OATH session
 func New() (*OATH, error) {
 	context, err := scard.EstablishContext()
 	if err != nil {
-		return nil, errors.Wrapf(err, errFailedToEstablishContext)
+		return nil, fmt.Errorf("%w: %w", errFailedToEstablishContext, err)
 	}
 
 	readers, err := context.ListReaders()
 	if err != nil {
-		return nil, errors.Wrapf(err, errFailedToListReaders)
+		return nil, fmt.Errorf("%w: %w", errFailedToListReaders, err)
 	}
 
 	for _, reader := range readers {
 		if strings.Contains(strings.ToLower(reader), "yubikey") {
-
 			card, err := context.Connect(reader, scard.ShareShared, scard.ProtocolAny)
 			if err != nil {
-				return nil, errors.Wrapf(err, errFailedToConnect)
+				return nil, fmt.Errorf("%w: %w", errFailedToConnect, err)
 			}
 
 			return &OATH{
@@ -109,28 +108,27 @@ func New() (*OATH, error) {
 				card:    card,
 				context: context,
 			}, nil
-
 		}
 	}
 
-	return nil, fmt.Errorf(errFailedToListSuitableReader, len(readers))
+	return nil, fmt.Errorf("%w (out of %d readers)", errFailedToListSuitableReader, len(readers))
 }
 
 // Close terminates an OATH session
 func (o *OATH) Close() error {
 	if err := o.card.Disconnect(scard.LeaveCard); err != nil {
-		return errors.Wrapf(err, errFailedToDisconnect)
+		return fmt.Errorf("%w: %w", errFailedToDisconnect, err)
 	}
 
 	if err := o.context.Release(); err != nil {
-		return errors.Wrapf(err, errFailedToReleaseContext)
+		return fmt.Errorf("%w: %w", errFailedToReleaseContext, err)
 	}
 
 	return nil
 }
 
 // send sends an APDU to the card
-func (o *OATH) send(cla byte, ins instruction, p1, p2 byte, data ...[]byte) (tvs, error) {
+func (o *OATH) send(cla byte, ins instruction, p1, p2 byte, data ...[]byte) (tvs, error) { //nolint:unparam
 	var (
 		code    code
 		results []byte
@@ -140,17 +138,18 @@ func (o *OATH) send(cla byte, ins instruction, p1, p2 byte, data ...[]byte) (tvs
 	for {
 		res, err := o.card.Transmit(send)
 		if err != nil {
-			return nil, errors.Wrapf(err, errFailedToTransmit)
+			return nil, fmt.Errorf("%w: %w", errFailedToTransmit, err)
 		}
 
 		code = res[len(res)-2:]
 		results = append(results, res[0:len(res)-2]...)
 
-		if code.IsMore() {
+		switch {
+		case code.IsMore():
 			send = []byte{0x00, 0xa5, 0x00, 0x00}
-		} else if code.IsSuccess() {
+		case code.IsSuccess():
 			return read(results), nil
-		} else {
+		default:
 			return nil, code
 		}
 	}

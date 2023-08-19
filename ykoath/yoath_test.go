@@ -43,21 +43,21 @@ func TestYkOATH(t *testing.T) {
 	p, err := oath.New(key, sha256.New)
 	require.NoError(err)
 
-	hash_oath := p.CalculateTOTP()
-	t.Logf("Hash (oath): %s %s", hex.EncodeToString(hash_oath), truncate(hash_oath, digits))
+	hashOATH := p.CalculateTOTP()
+	t.Logf("Hash (oath): %s %s", hex.EncodeToString(hashOATH), truncate(hashOATH, digits))
 
 	err = o.Delete("gotest")
 	require.NoError(err)
 
-	err = o.Put("gotest", ykoath.HMAC_SHA256, ykoath.TOTP, key, false, digits)
+	err = o.Put("gotest", ykoath.HMACSHA256, ykoath.TOTP, key, false, digits)
 	require.NoError(err)
 
-	hash_ykoath, digits, err := o.CalculateTOTP("gotest")
+	hashYKOATH, digits, err := o.CalculateTOTP("gotest")
 	require.NoError(err)
 
-	t.Logf("Hash (ykoath): %s %s", hex.EncodeToString(hash_ykoath), truncate(hash_ykoath, digits))
+	t.Logf("Hash (ykoath): %s %s", hex.EncodeToString(hashYKOATH), truncate(hashYKOATH, digits))
 
-	require.Equal(hash_oath, hash_ykoath)
+	require.Equal(hashOATH, hashYKOATH)
 
 	err = o.Close()
 	require.NoError(err)
