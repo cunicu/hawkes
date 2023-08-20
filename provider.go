@@ -3,21 +3,10 @@
 
 package skes
 
-type (
-	Secret     [32]byte
-	PublicKey  []byte
-	CipherText []byte
-)
+import "context"
 
-type SecretProvider interface {
-	Secret() (Secret, error)
-}
+type Secret [32]byte
 
-type SecretEncrypter interface {
-	Encrypt(ss Secret, pk PublicKey) (ct CipherText, err error)
-}
-
-type SecretDecrypter interface {
-	PublicKey() PublicKey
-	Decrypt(ct CipherText) (ss Secret, err error)
+type Provider interface {
+	Secret(ctx context.Context) (Secret, error)
 }
