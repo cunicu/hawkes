@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Steffen Vogel <post@steffenvogel.de>
 // SPDX-License-Identifier: Apache-2.0
 
-package ykoath_test
+package yk_test
 
 import (
 	"crypto/sha256"
@@ -10,15 +10,15 @@ import (
 	"math"
 	"testing"
 
+	"cunicu.li/go-skes/providers/oath"
+	"cunicu.li/go-skes/providers/oath/yk"
 	"github.com/stretchr/testify/require"
-	"github.com/yawn/ykoath/oath"
-	"github.com/yawn/ykoath/ykoath"
 )
 
 func TestYkOATH(t *testing.T) {
 	require := require.New(t)
 
-	o, err := ykoath.New()
+	o, err := yk.New()
 	require.NoError(err)
 
 	s, err := o.Select()
@@ -49,7 +49,7 @@ func TestYkOATH(t *testing.T) {
 	err = o.Delete("gotest")
 	require.NoError(err)
 
-	err = o.Put("gotest", ykoath.HMACSHA256, ykoath.TOTP, key, false, digits)
+	err = o.Put("gotest", yk.HMACSHA256, yk.TOTP, key, false, digits)
 	require.NoError(err)
 
 	hashYKOATH, digits, err := o.CalculateTOTP("gotest")

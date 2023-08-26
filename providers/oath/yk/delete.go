@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Joern Barthel
 // SPDX-License-Identifier: Apache-2.0
 
-package ykoath
+package yk
 
 // Delete sends a "DELETE" instruction, removing one named OATH credential
 func (o *OATH) Delete(name string) error {
