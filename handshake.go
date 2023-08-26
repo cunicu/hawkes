@@ -3,53 +3,50 @@
 
 package skes
 
-type (
-	PublicKey  []byte
-	CipherText []byte
+import (
+	"context"
+	"fmt"
+
+	"github.com/katzenpost/nyquist"
+	"github.com/katzenpost/nyquist/cipher"
+	"github.com/katzenpost/nyquist/dh"
+	"github.com/katzenpost/nyquist/hash"
+	"github.com/katzenpost/nyquist/pattern"
 )
 
-type SecretEncrypter interface {
-	Encrypt(ss Secret, pk PublicKey) (ct CipherText, err error)
+var _ Provider = (*Handshake)(nil)
+
+var protocol = &nyquist.Protocol{
+	Pattern: pattern.XX,
+	DH:      dh.X25519,
+	Cipher:  cipher.ChaChaPoly,
+	Hash:    hash.BLAKE2s,
 }
 
-type SecretDecrypter interface {
-	PublicKey() PublicKey
-	Decrypt(ct CipherText) (ss Secret, err error)
+type Handshake struct {
+	state *nyquist.HandshakeState
+
+	dh dh.DH
 }
 
-type Communicator interface {
-	Send(msg any) error
-	Receive() (any, error)
-}
-
-type Initiator struct {
-	dec  SecretDecrypter
-	comm Communicator
-}
-
-func NewInitiator(comm Communicator, dec SecretDecrypter) *Initiator {
-	return &Initiator{
-		comm: comm,
-		dec:  dec,
+func NewHandshake(dh dh.DH) (hs *Handshake, err error) {
+	hs = &Handshake{
+		dh: dh,
 	}
-}
 
-func (i *Initiator) Secret() (Secret, error) {
-	return Secret{}, nil
-}
-
-type Responder struct {
-	enc  SecretEncrypter
-	comm Communicator
-}
-
-func NewResponder(comm Communicator, enc SecretEncrypter) *Responder {
-	return &Responder{
-		comm: comm,
-		enc:  enc,
+	cfg := &nyquist.HandshakeConfig{
+		Protocol: protocol,
 	}
+
+	if hs.state, err = nyquist.NewHandshake(cfg); err != nil {
+		return nil, fmt.Errorf("failed to create handshake: %w", err)
+	}
+
+	return hs, nil
 }
 
-func (r *Responder) Secret() (Secret, error) {
+func (hs *Handshake) Secret(ctx context.Context) (Secret, error) {
+	hs.state.GetStatus()
+
 	return Secret{}, nil
 }
