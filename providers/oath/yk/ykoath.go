@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: 2023 Joern Barthel
+// SPDX-FileCopyrightText: 2023 Steffen Vogel <post@steffenvogel.de>
 // SPDX-License-Identifier: Apache-2.0
 
-// Package ykoath implements the Yubico OATH protocol
+// package yk implements the Yubico OATH protocol
 // for the Yubikey OATH-HOTP/TOTP hardware tokens
 // https://developers.yubico.com/OATH/YKOATH_Protocol.html
-package ykoath
+package yk
 
 import (
 	"errors"
@@ -12,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"cunicu.li/go-skes/internal/iso7816"
 	"github.com/ebfe/scard"
 )
 
@@ -53,23 +55,14 @@ const (
 	insSendRemaining instruction = 0xA5
 )
 
-type card interface {
-	Disconnect(scard.Disposition) error
-	Transmit([]byte) ([]byte, error)
-}
-
-type context interface {
-	Release() error
-}
-
 // OATH implements most parts of the TOTP portion of the YKOATH specification
 // https://developers.yubico.com/OATH/YKOATH_Protocol.html
 type OATH struct {
 	Clock  func() time.Time
 	Period time.Duration
 
-	card    card
-	context context
+	card    *scard.Card
+	context *scard.Context
 }
 
 var (
@@ -130,7 +123,7 @@ func (o *OATH) Close() error {
 // send sends an APDU to the card
 func (o *OATH) send(cla byte, ins instruction, p1, p2 byte, data ...[]byte) (tvs, error) { //nolint:unparam
 	var (
-		code    code
+		code    iso7816.Code
 		results []byte
 		send    = append([]byte{cla, byte(ins), p1, p2}, write(0x00, data...)...)
 	)

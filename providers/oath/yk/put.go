@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Joern Barthel
 // SPDX-License-Identifier: Apache-2.0
 
-package ykoath
+package yk
 
 import (
 	"crypto/sha1" //nolint:gosec
