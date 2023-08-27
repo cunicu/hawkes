@@ -1,83 +1,265 @@
 // SPDX-FileCopyrightText: 2023 Steffen Vogel <post@steffenvogel.de>
+// SPDX-FileCopyrightText: 2023 Meta Platforms, Inc. and affiliates.
 // SPDX-License-Identifier: Apache-2.0
+
+//go:build darwin
 
 package se
 
 import (
-	"io"
-
-	"github.com/katzenpost/nyquist/dh"
+	"errors"
+	"fmt"
+	"unsafe"
 )
 
-var _ dh.DH = (*DH)(nil)
+/*
+#cgo LDFLAGS: -framework Security
 
-type DH struct{}
+#include <Security/Security.h>
+*/
+import "C"
 
-func (dh *DH) String() string {
-	return "piv" // + dh.hash?
+var errExtractingPublicKey = errors.New("error extracting public key")
+
+// GenerateKeyPair creates a key with the given label and tag.
+// Returns public key raw data.
+func GenerateKeyPair(label, tag string) ([]byte, error) {
+	protection := C.kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+	flags := C.kSecAccessControlPrivateKeyUsage
+
+	cfTag, err := newCFData([]byte(tag))
+	if err != nil {
+		return nil, err
+	}
+	defer C.CFRelease(C.CFTypeRef(cfTag))
+
+	cfLabel, err := newCFString(label)
+	if err != nil {
+		return nil, err
+	}
+	defer C.CFRelease(C.CFTypeRef(cfLabel))
+
+	var eref C.CFErrorRef
+	access := C.SecAccessControlCreateWithFlags(
+		C.kCFAllocatorDefault,
+		C.CFTypeRef(protection),
+		C.SecAccessControlCreateFlags(flags),
+		&eref)
+
+	if err := goError(eref); err != nil {
+		C.CFRelease(C.CFTypeRef(eref))
+		return nil, err
+	}
+	defer C.CFRelease(C.CFTypeRef(access))
+
+	privKeyAttrs, err := newCFDictionary(map[C.CFTypeRef]C.CFTypeRef{
+		C.CFTypeRef(C.kSecAttrAccessControl):  C.CFTypeRef(access),
+		C.CFTypeRef(C.kSecAttrApplicationTag): C.CFTypeRef(cfTag),
+		C.CFTypeRef(C.kSecAttrIsPermanent):    C.CFTypeRef(C.kCFBooleanTrue),
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer C.CFRelease(C.CFTypeRef(privKeyAttrs))
+
+	attrs, err := newCFDictionary(map[C.CFTypeRef]C.CFTypeRef{
+		C.CFTypeRef(C.kSecAttrLabel):       C.CFTypeRef(cfLabel),
+		C.CFTypeRef(C.kSecAttrTokenID):     C.CFTypeRef(C.kSecAttrTokenIDSecureEnclave),
+		C.CFTypeRef(C.kSecAttrKeyType):     C.CFTypeRef(C.kSecAttrKeyTypeEC),
+		C.CFTypeRef(C.kSecPrivateKeyAttrs): C.CFTypeRef(privKeyAttrs),
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer C.CFRelease(C.CFTypeRef(attrs))
+
+	privKey := C.SecKeyCreateRandomKey(attrs, &eref)
+	if err := goError(eref); err != nil {
+		C.CFRelease(C.CFTypeRef(eref))
+		return nil, err
+	}
+	if privKey == nilSecKey {
+		return nil, fmt.Errorf("error generating random private key")
+	}
+	defer C.CFRelease(C.CFTypeRef(privKey))
+
+	publicKey := C.SecKeyCopyPublicKey(privKey)
+	if publicKey == nilSecKey {
+		return nil, errExtractingPublicKey
+	}
+	defer C.CFRelease(C.CFTypeRef(publicKey))
+
+	keyAttrs := C.SecKeyCopyAttributes(publicKey)
+	defer C.CFRelease(C.CFTypeRef(keyAttrs))
+
+	publicKeyData := C.CFDataRef(C.CFDictionaryGetValue(keyAttrs, unsafe.Pointer(C.kSecValueData)))
+
+	return C.GoBytes(
+		unsafe.Pointer(C.CFDataGetBytePtr(publicKeyData)),
+		C.int(C.CFDataGetLength(publicKeyData)),
+	), nil
 }
 
-// GenerateKeypair generates a new Diffie-Hellman keypair using the
-// provided entropy source.
-func (dh *DH) GenerateKeypair(rng io.Reader) (dh.Keypair, error) {
-	return nil, nil
+// FindPublicKey returns the raw public key described by label and tag
+// hash is the SHA1 of the key. Can be nil.
+func FindPublicKey(label, tag string, hash []byte) ([]byte, error) {
+	key, err := fetchSEPrivateKey(label, tag, hash)
+	if err == nil {
+		defer C.CFRelease(C.CFTypeRef(key))
+		return extractPublicKey(key)
+	}
+
+	var oserr osStatusError
+	if errors.As(err, &oserr) {
+		if oserr.code == C.errSecItemNotFound {
+			return nil, nil
+		}
+	}
+	return nil, err
 }
 
-// ParsePrivateKey parses a binary encoded private key.
-func (dh *DH) ParsePrivateKey(data []byte) (dh.Keypair, error) {
-	return nil, nil
+// SignWithKey signs arbitrary data pointed to by data with the key described by
+// label and tag. Returns the signed data.
+// hash is the SHA1 of the key. Can be nil.
+func SignWithKey(label, tag string, hash, digest []byte) ([]byte, error) {
+	key, err := fetchSEPrivateKey(label, tag, hash)
+	if err != nil {
+		return nil, err
+	}
+	defer C.CFRelease(C.CFTypeRef(key))
+
+	cfDigest, err := newCFData(digest)
+	if err != nil {
+		return nil, err
+	}
+	defer C.CFRelease(C.CFTypeRef(cfDigest))
+
+	var eref C.CFErrorRef
+	signature := C.SecKeyCreateSignature(key, C.kSecKeyAlgorithmECDSASignatureDigestX962, cfDigest, &eref)
+	if err := goError(eref); err != nil {
+		return nil, err
+	}
+	defer C.CFRelease(C.CFTypeRef(signature))
+
+	return C.GoBytes(
+		unsafe.Pointer(C.CFDataGetBytePtr(signature)),
+		C.int(C.CFDataGetLength(signature)),
+	), nil
 }
 
-// ParsePublicKey parses a binary encoded public key.
-func (dh *DH) ParsePublicKey(data []byte) (dh.PublicKey, error) {
-	return nil, nil
+// RemoveKey tries to delete a key identified by label, tag and hash.
+// hash is the SHA1 of the key. Can be nil
+// If hash is nil then all the keys that match the label and tag specified will
+// be deleted.
+// Returns true if the key was found and deleted successfully
+func RemoveKey(label, tag string, hash []byte) (bool, error) {
+	cfTag, err := newCFData([]byte(tag))
+	if err != nil {
+		return false, err
+	}
+	defer C.CFRelease(C.CFTypeRef(cfTag))
+
+	cfLabel, err := newCFString(label)
+	if err != nil {
+		return false, err
+	}
+	defer C.CFRelease(C.CFTypeRef(cfLabel))
+
+	m := map[C.CFTypeRef]C.CFTypeRef{
+		C.CFTypeRef(C.kSecClass):              C.CFTypeRef(C.kSecClassKey),
+		C.CFTypeRef(C.kSecAttrKeyType):        C.CFTypeRef(C.kSecAttrKeyTypeEC),
+		C.CFTypeRef(C.kSecAttrApplicationTag): C.CFTypeRef(cfTag),
+		C.CFTypeRef(C.kSecAttrLabel):          C.CFTypeRef(cfLabel),
+		C.CFTypeRef(C.kSecAttrKeyClass):       C.CFTypeRef(C.kSecAttrKeyClassPrivate),
+	}
+
+	if hash != nil {
+		d, err := newCFData(hash)
+		if err != nil {
+			return false, nil
+		}
+		defer C.CFRelease(C.CFTypeRef(d))
+
+		m[C.CFTypeRef(C.kSecAttrApplicationLabel)] = C.CFTypeRef(d)
+	}
+	query, err := newCFDictionary(m)
+	if err != nil {
+		return false, err
+	}
+	defer C.CFRelease(C.CFTypeRef(query))
+
+	var st C.OSStatus = C.errSecDuplicateItem
+	for st == C.errSecDuplicateItem {
+		st = C.SecItemDelete(query)
+	}
+	if err := goError(st); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
-// Size returns the size of public keys and DH outputs in bytes (`DHLEN`).
-func (dh *DH) Size() int {
-	return 0
+func fetchSEPrivateKey(label, tag string, hash []byte) (C.SecKeyRef, error) {
+	cfTag, err := newCFData([]byte(tag))
+	if err != nil {
+		return nilSecKey, err
+	}
+	defer C.CFRelease(C.CFTypeRef(cfTag))
+
+	cfLabel, err := newCFString(label)
+	if err != nil {
+		return nilSecKey, err
+	}
+	defer C.CFRelease(C.CFTypeRef(cfLabel))
+
+	m := map[C.CFTypeRef]C.CFTypeRef{
+		C.CFTypeRef(C.kSecClass):              C.CFTypeRef(C.kSecClassKey),
+		C.CFTypeRef(C.kSecAttrKeyType):        C.CFTypeRef(C.kSecAttrKeyTypeEC),
+		C.CFTypeRef(C.kSecAttrApplicationTag): C.CFTypeRef(cfTag),
+		C.CFTypeRef(C.kSecAttrLabel):          C.CFTypeRef(cfLabel),
+		C.CFTypeRef(C.kSecAttrKeyClass):       C.CFTypeRef(C.kSecAttrKeyClassPrivate),
+		C.CFTypeRef(C.kSecReturnRef):          C.CFTypeRef(C.kCFBooleanTrue),
+		C.CFTypeRef(C.kSecMatchLimit):         C.CFTypeRef(C.kSecMatchLimitOne),
+	}
+
+	if hash != nil {
+		d, err := newCFData(hash)
+		if err != nil {
+			return nilSecKey, err
+		}
+		defer C.CFRelease(C.CFTypeRef(d))
+
+		m[C.CFTypeRef(C.kSecAttrApplicationLabel)] = C.CFTypeRef(d)
+	}
+
+	query, err := newCFDictionary(m)
+	if err != nil {
+		return nilSecKey, err
+	}
+	defer C.CFRelease(C.CFTypeRef(query))
+
+	var key C.CFTypeRef
+	status := C.SecItemCopyMatching(query, &key)
+	if err := goError(status); err != nil {
+		return nilSecKey, err
+	}
+
+	return C.SecKeyRef(key), nil
 }
 
-var _ dh.Keypair = (*KeyPair)(nil)
+func extractPublicKey(key C.SecKeyRef) ([]byte, error) {
+	publicKey := C.SecKeyCopyPublicKey(key)
+	defer C.CFRelease(C.CFTypeRef(publicKey))
 
-type KeyPair struct{}
+	keyAttrs := C.SecKeyCopyAttributes(publicKey)
+	defer C.CFRelease(C.CFTypeRef(keyAttrs))
 
-// DropPrivate discards the private key.
-func (kp *KeyPair) DropPrivate() {
-}
+	val := C.CFDataRef(C.CFDictionaryGetValue(keyAttrs, unsafe.Pointer(C.kSecValueData)))
+	if val == nilCFData {
+		return nil, fmt.Errorf("cannot extract public key")
+	}
 
-// Public returns the public key of the keypair.
-func (kp *KeyPair) Public() dh.PublicKey
-
-// DH performs a Diffie-Hellman calculation between the private key
-// in the keypair and the provided public key.
-func (kp *KeyPair) DH(publicKey dh.PublicKey) ([]byte, error)
-
-func (kp *KeyPair) MarshalBinary() (data []byte, err error) {
-	return nil, nil
-}
-
-func (kp *KeyPair) UnmarshalBinary(data []byte) error {
-	return nil
-}
-
-var _ dh.PublicKey = (*PublicKey)(nil)
-
-// PublicKey is a Diffie-Hellman public key.
-type PublicKey struct{}
-
-// Bytes returns the binary serialized public key.
-//
-// Warning: Altering the returned slice is unsupported and will lead
-// to unexpected behavior.
-func (pk *PublicKey) Bytes() []byte {
-	return nil
-}
-
-func (pk *PublicKey) MarshalBinary() (data []byte, err error) {
-	return nil, nil
-}
-
-func (pk *PublicKey) UnmarshalBinary(data []byte) error {
-	return nil
+	return C.GoBytes(
+		unsafe.Pointer(C.CFDataGetBytePtr(val)),
+		C.int(C.CFDataGetLength(val)),
+	), nil
 }
