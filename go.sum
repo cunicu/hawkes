@@ -10,6 +10,14 @@ github.com/ebfe/scard v0.0.0-20230420082256-7db3f9b7c8a7 h1:HYAhfGa9dEemCZgGZWL5
 github.com/ebfe/scard v0.0.0-20230420082256-7db3f9b7c8a7/go.mod h1:BkYEeWL6FbT4Ek+TcOBnPzEKnL7kOq2g19tTQXkorHY=
 github.com/google/go-tpm v0.9.0 h1:sQF6YqWMi+SCXpsmS3fd21oPy/vSddwZry4JnmltHVk=
 github.com/google/go-tpm v0.9.0/go.mod h1:FkNVkc6C+IsvDI9Jw1OveJmxGZUUaKxtrpOS47QWKfU=
+github.com/ebfe/scard v0.0.0-20190212122703-c3d1b1916a95 h1:OM0MnUcXBysj7ZtXvThVWHMoahuKQ8FuwIdeSLcNdP4=
+github.com/ebfe/scard v0.0.0-20190212122703-c3d1b1916a95/go.mod h1:8hHvF8DlEq5kE3KWOsZQezdWq1OTOVxZArZMscS954E=
+github.com/foxboron/swtpm_test v0.0.0-20230726224112-46aaafdf7006 h1:50sW4r0PcvlpG4PV8tYh2RVCapszJgaOLRCS2subvV4=
+github.com/foxboron/swtpm_test v0.0.0-20230726224112-46aaafdf7006/go.mod h1:eIXCMsMYCaqq9m1KSSxXwQG11krpuNPGP3k0uaWrbas=
+github.com/go-piv/piv-go v1.11.0 h1:5vAaCdRTFSIW4PeqMbnsDlUZ7odMYWnHBDGdmtU/Zhg=
+github.com/go-piv/piv-go v1.11.0/go.mod h1:NZ2zmjVkfFaL/CF8cVQ/pXdXtuj110zEKGdJM6fJZZM=
+github.com/google/go-tpm v0.9.1-0.20230720145701-e9722e4450de h1:dbrX2X/8QXV6Qp4FBo8c9Tmch9/v6vex90YdiZu5bGQ=
+github.com/google/go-tpm v0.9.1-0.20230720145701-e9722e4450de/go.mod h1:FkNVkc6C+IsvDI9Jw1OveJmxGZUUaKxtrpOS47QWKfU=
 github.com/katzenpost/nyquist v0.0.0-20230509162347-757d62695b4e h1:xc2jhybm5w+/ysiGsXGxFHYycq2njtaZpwBx7ciufq0=
 github.com/katzenpost/nyquist v0.0.0-20230509162347-757d62695b4e/go.mod h1:9EM6KMlfKreGS7JIj3UCQm0G8xEVgyVlzVAapWEQbAc=
 github.com/katzenpost/nyquist v0.0.2 h1:SjcA+JPblumg7Hoypm0E1V2KSEgrzk+hBRBnm0Z8ENg=

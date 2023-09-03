@@ -10,6 +10,9 @@ require (
 	golang.org/x/crypto v0.16.0
 	golang.org/x/sync v0.5.0
 	gopkg.in/yaml.v3 v3.0.1
+	github.com/foxboron/swtpm_test v0.0.0-20230726224112-46aaafdf7006
+	github.com/go-piv/piv-go v1.11.0
+	github.com/google/go-tpm v0.9.1-0.20230720145701-e9722e4450de
 )
 
 require github.com/stretchr/testify v1.8.4 // test-only
