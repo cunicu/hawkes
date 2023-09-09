@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"os"
 
-	"cunicu.li/go-skes/providers/ecdh/se"
+	"cunicu.li/hawkes/providers/ecdh/se"
 )
 
 var (

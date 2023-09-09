@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"cunicu.li/go-skes/internal/iso7816"
+	"cunicu.li/hawkes/internal/iso7816"
 	"github.com/ebfe/scard"
 )
 

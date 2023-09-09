@@ -10,8 +10,8 @@ import (
 	"math"
 	"testing"
 
-	"cunicu.li/go-skes/providers/oath"
-	"cunicu.li/go-skes/providers/oath/yk"
+	"cunicu.li/hawkes/providers/oath"
+	"cunicu.li/hawkes/providers/oath/yk"
 	"github.com/stretchr/testify/require"
 )
 

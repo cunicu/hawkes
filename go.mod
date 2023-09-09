@@ -1,4 +1,4 @@
-module cunicu.li/go-skes
+module cunicu.li/hawkes
 
 go 1.21
 

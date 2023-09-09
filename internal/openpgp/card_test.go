@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"cunicu.li/go-skes/internal/openpgp"
+	"cunicu.li/hawkes/internal/openpgp"
 	"github.com/ebfe/scard"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"

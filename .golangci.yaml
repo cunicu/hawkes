@@ -27,7 +27,7 @@ linters-settings:
     sections:
     - standard
     - default
-    - prefix(cunicu.li/go-skes)
+    - prefix(cunicu.li/hawkes)
     - blank
     - dot
 

@@ -4,7 +4,7 @@
 //nolint:unused,gochecknoglobals
 package openpgp
 
-import "cunicu.li/go-skes/internal/iso7816"
+import "cunicu.li/hawkes/internal/iso7816"
 
 type RID [5]byte
 

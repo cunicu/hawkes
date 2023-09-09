@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"strings"
 
-	"cunicu.li/go-skes/providers/ecdh"
+	"cunicu.li/hawkes/providers/ecdh"
 	"github.com/go-piv/piv-go/piv"
 	"github.com/katzenpost/nyquist/dh"
 )
