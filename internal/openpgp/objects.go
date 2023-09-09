@@ -12,7 +12,7 @@ import (
 	"log/slog"
 	"time"
 
-	iso "cunicu.li/go-skes/internal/iso7816"
+	iso "cunicu.li/hawkes/internal/iso7816"
 )
 
 var (

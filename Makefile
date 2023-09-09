@@ -3,10 +3,10 @@
 
 CODESIGN_IDENTITY ?= "Apple Development: post@steffenvogel.de"
 
-all: skes
+all: hawkes
 
-skes: ./assets/entitlements.xml
+hawkes: ./assets/entitlements.xml
 	go build -o $@ ./cmd
 	codesign -f -s ${CODESIGN_IDENTITY} --entitlements ./assets/entitlements.xml $@
 
-.PHONY: all
+.PHONY: all hawkes

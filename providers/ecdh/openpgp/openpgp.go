@@ -6,8 +6,7 @@ package openpgp
 import (
 	"errors"
 
-	"cunicu.li/go-skes/providers/ecdh"
-
+	"cunicu.li/hawkes/providers/ecdh"
 	"github.com/katzenpost/nyquist/dh"
 )
 

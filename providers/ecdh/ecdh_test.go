@@ -8,8 +8,8 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"cunicu.li/go-skes/providers/ecdh"
-	pivx "cunicu.li/go-skes/providers/ecdh/piv"
+	"cunicu.li/hawkes/providers/ecdh"
+	pivx "cunicu.li/hawkes/providers/ecdh/piv"
 	"github.com/go-piv/piv-go/piv"
 	"github.com/katzenpost/nyquist/dh"
 	"github.com/stretchr/testify/require"
