@@ -9,4 +9,8 @@ hawkes: ./assets/entitlements.xml
 	go build -o $@ ./cmd
 	codesign -f -s ${CODESIGN_IDENTITY} --entitlements ./assets/entitlements.xml $@
 
-.PHONY: all hawkes
+provider-test:
+	go test -c -o $@ ./provider
+	codesign -f -s ${CODESIGN_IDENTITY} --entitlements ./assets/entitlements.xml $@
+
+.PHONY: all hawkes provider-test

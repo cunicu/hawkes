@@ -1,0 +1,22 @@
+// SPDX-FileCopyrightText: 2023 Steffen Vogel <post@steffenvogel.de>
+// SPDX-License-Identifier: Apache-2.0
+
+package piv_test
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	pivx "cunicu.li/hawkes/ecdh/piv"
+	"cunicu.li/hawkes/internal/test"
+)
+
+func TestPIV(t *testing.T) {
+	require := require.New(t)
+
+	skAlice, err := pivx.LoadPrivateKey()
+	require.NoError(err)
+
+	test.TestKeypair(t, skAlice)
+}

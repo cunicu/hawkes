@@ -5,7 +5,7 @@ package iso7816
 
 type (
 	CompactTag byte   // As used in compact TLV encoding
-	Tag        uint32 // in theory ISO 7816-4 also supports 3-byte tags
+	Tag        uint32 // In theory ISO 7816-4 also supports 3-byte tags
 )
 
 const (
