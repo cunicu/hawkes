@@ -4,7 +4,7 @@ SPDX-License-Identifier: Apache-2.0
 -->
 
 <div align="center" >
-    <img style="width: 40%;" src="assets/hawkes_logo.svg" alt="cunīcu logo" />
+    <img style="width: 40%;" src="docs/hawkes_logo.svg" alt="cunīcu logo" />
 
 # Hardware-secured Key Establishment
 
