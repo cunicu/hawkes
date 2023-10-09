@@ -7,12 +7,12 @@ SPDX-License-Identifier: Apache-2.0
 <plist version="1.0">
 <dict>
         <key>com.apple.application-identifier</key>
-        <string>XXXXXXXXXX.li.cunicu.go-skes</string>
+        <string>48R3DXFYHK.li.cunicu.hawkes</string>
         <key>com.apple.developer.team-identifier</key>
-        <string>XXXXXXXXXX</string>
+        <string>48R3DXFYHK</string>
         <key>keychain-access-groups</key>
         <array>
-                <string>XXXXXXXXXX.li.cunicu.go-skes</string>
+                <string>48R3DXFYHK.li.cunicu.hawkes</string>
         </array>
 </dict>
 </plist>
