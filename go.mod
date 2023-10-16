@@ -8,7 +8,7 @@ require (
 	github.com/katzenpost/nyquist v0.0.0-20230509162347-757d62695b4e
 	github.com/miekg/pkcs11 v1.1.2-0.20230621133335-e678cf59e528
 	golang.org/x/crypto v0.12.0
-	golang.org/x/sync v0.3.0
+	golang.org/x/sync v0.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
