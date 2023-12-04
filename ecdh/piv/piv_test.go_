@@ -18,5 +18,5 @@ func TestPIV(t *testing.T) {
 	skAlice, err := pivx.LoadPrivateKey()
 	require.NoError(err)
 
-	test.TestKeypair(t, skAlice)
+	test.ECDH(t, skAlice)
 }

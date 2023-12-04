@@ -19,5 +19,5 @@ func TestSoftware(t *testing.T) {
 	kpAlice, err := sw.P256.GenerateKeypair(rand.Reader)
 	require.NoError(err)
 
-	test.TestKeypair(t, kpAlice)
+	test.ECDH(t, kpAlice)
 }
