@@ -14,8 +14,8 @@ import (
 	"cunicu.li/hawkes/ecdh/sw"
 )
 
-//nolint:revive
-func TestKeypair(t *testing.T, skAlice ecdh.PrivateKey) {
+// ECDH performs an Elliptic Curve Diffie-Hellman exchange for testing
+func ECDH(t *testing.T, skAlice ecdh.PrivateKey) {
 	require := require.New(t)
 
 	kpBob, err := sw.P256.GenerateKeypair(rand.Reader)
