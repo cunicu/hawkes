@@ -10,9 +10,8 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/ebfe/scard"
-
-	"cunicu.li/hawkes/hmac/ykoath"
+	"cunicu.li/go-iso7816"
+	"cunicu.li/go-ykoath/v2"
 )
 
 var _ PrivateKeyHMAC = (*ykoathKey)(nil)
@@ -38,7 +37,7 @@ func (k *ykoathKey) Details() map[string]any {
 }
 
 func (k *ykoathKey) HMAC(chal []byte) ([]byte, error) {
-	secret, _, err := k.provider.CalculateHOTP(k.name, chal)
+	secret, _, err := k.provider.CalculateChallengeResponse(k.name, chal)
 	if err != nil {
 		return nil, err
 	}
@@ -49,16 +48,16 @@ func (k *ykoathKey) HMAC(chal []byte) ([]byte, error) {
 var _ Provider = (*ykoathProvider)(nil)
 
 type ykoathProvider struct {
-	*ykoath.OATH
+	*ykoath.Card
 }
 
-func newYKOATHProvider(card *scard.Card) (Provider, error) {
-	oath, err := ykoath.New(card, 0)
+func newYKOATHProvider(card iso7816.PCSCCard) (Provider, error) {
+	ykoathCard, err := ykoath.NewCard(card)
 	if err != nil {
 		return nil, err
 	}
 
-	sel, err := oath.Select()
+	sel, err := ykoathCard.Select()
 	if err != nil {
 		return nil, fmt.Errorf("failed to select app: %w", err)
 	}
@@ -67,7 +66,7 @@ func newYKOATHProvider(card *scard.Card) (Provider, error) {
 		slog.String("version", fmt.Sprintf("%d.%d.%d", sel.Version[0], sel.Version[1], sel.Version[2])))
 
 	return &ykoathProvider{
-		OATH: oath,
+		Card: ykoathCard,
 	}, nil
 }
 
@@ -78,7 +77,7 @@ func (p *ykoathProvider) Keys() (keyIDs []KeyID, err error) {
 	}
 
 	for _, slot := range slots {
-		if slot.Algorithm != ykoath.HMACSHA256 {
+		if slot.Algorithm != ykoath.HmacSha256 {
 			continue
 		}
 
@@ -103,7 +102,7 @@ func (p *ykoathProvider) DestroyKey(id KeyID) error {
 }
 
 func (p *ykoathProvider) CreateKeyFromSecret(label string, secret []byte) (KeyID, error) {
-	if err := p.Put(label, ykoath.HMACSHA256, ykoath.TOTP, secret, false, 6); err != nil {
+	if err := p.Put(label, ykoath.HmacSha256, ykoath.Totp, 6, secret, false, 0); err != nil {
 		return nil, err
 	}
 
@@ -143,7 +142,7 @@ func (p *ykoathProvider) nameByID(id KeyID) (string, error) {
 	}
 
 	for _, slot := range slots {
-		if slot.Algorithm != ykoath.HMACSHA256 {
+		if slot.Algorithm != ykoath.HmacSha256 {
 			continue
 		}
 
@@ -161,7 +160,7 @@ func (p *ykoathProvider) nameByID(id KeyID) (string, error) {
 }
 
 func (p *ykoathProvider) keyID(name string) (KeyID, error) {
-	key, _, err := p.CalculateHOTP(name, []byte(idChallenge))
+	key, _, err := p.CalculateChallengeResponse(name, []byte(idChallenge))
 	if err != nil {
 		return nil, err
 	}

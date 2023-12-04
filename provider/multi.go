@@ -9,6 +9,9 @@ import (
 	"io/fs"
 	"os"
 
+	"cunicu.li/go-iso7816"
+	"cunicu.li/go-iso7816/drivers/pcsc"
+	"cunicu.li/go-iso7816/filter"
 	"github.com/ebfe/scard"
 	"github.com/google/go-tpm/tpm2/transport"
 )
@@ -24,22 +27,25 @@ var (
 )
 
 type (
-	newProviderStd   func() (Provider, error)
-	newProviderSCard func(*scard.Card) (Provider, error)
-	NewProviderTPM   func(transport.TPM) (Provider, error)
+	newProviderStd  func() (Provider, error)
+	newProviderCard func(iso7816.PCSCCard) (Provider, error)
+	NewProviderTPM  func(transport.TPM) (Provider, error)
+
+	CardFilter = filter.Filter
+	TPMFilter  func(string) bool
 )
 
 type MultiProviderConfig struct {
-	TPMPaths      []string
-	FilterReaders func(string) bool
-	FilterTPMs    func(string) bool
+	TPMPaths    []string
+	FilterCards CardFilter
+	FilterTPMs  TPMFilter
 }
 
 type MultiProvider struct {
 	cfg   MultiProviderConfig
 	scard *scard.Context
 
-	cards []*scard.Card
+	cards []iso7816.PCSCCard
 	tpms  []transport.TPMCloser
 
 	providers []Provider
@@ -73,7 +79,7 @@ func NewProvider(cfg MultiProviderConfig) (p *MultiProvider, err error) {
 
 			p.providers = append(p.providers, provider)
 
-		case newProviderSCard:
+		case newProviderCard:
 			for _, card := range p.cards {
 				provider, err := ctor(card)
 				if err != nil {
@@ -100,7 +106,7 @@ func NewProvider(cfg MultiProviderConfig) (p *MultiProvider, err error) {
 
 func (p *MultiProvider) Close() error {
 	for _, card := range p.cards {
-		if err := card.Disconnect(scard.LeaveCard); err != nil {
+		if err := card.Close(); err != nil {
 			return err
 		}
 	}
@@ -139,26 +145,8 @@ func (p *MultiProvider) OpenKey(KeyID) (PrivateKey, error) {
 	return nil, errors.ErrUnsupported
 }
 
-func (p *MultiProvider) openCards() (cards []*scard.Card, err error) {
-	readers, err := p.scard.ListReaders()
-	if err != nil {
-		return nil, fmt.Errorf("failed to list readers: %w", err)
-	}
-
-	for _, reader := range readers {
-		if !p.cfg.FilterReaders(reader) {
-			continue
-		}
-
-		card, err := p.scard.Connect(reader, scard.ShareShared, scard.ProtocolAny)
-		if err != nil {
-			return nil, fmt.Errorf("failed to connect to reader: %w", err)
-		}
-
-		cards = append(cards, card)
-	}
-
-	return cards, nil
+func (p *MultiProvider) openCards() (cards []iso7816.PCSCCard, err error) {
+	return pcsc.OpenCards(p.scard, 0, p.cfg.FilterCards, false)
 }
 
 func (p *MultiProvider) openTPMs() (tpms []transport.TPMCloser, err error) {
