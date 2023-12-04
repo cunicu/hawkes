@@ -9,8 +9,9 @@ import (
 	"fmt"
 	"log"
 
-	iso "cunicu.li/hawkes/internal/iso7816"
 	"github.com/ebfe/scard"
+
+	iso "cunicu.li/hawkes/internal/iso7816"
 )
 
 var (
@@ -41,10 +42,10 @@ func NewCard(sc *scard.Card) (c *Card, err error) {
 }
 
 // sendAPDU sends an APDU 7816-4 with extended length
-func (c *Card) communicate(cla byte, ins iso.Instruction, p1, p2 byte, data []byte, lenExpResp int) (resp []byte, err error) {
+func (c *Card) communicate(ins iso.Instruction, p1, p2 byte, data []byte, lenExpResp int) (resp []byte, err error) {
 	lenData := len(data)
 
-	apdu := []byte{cla, byte(ins), p1, p2}
+	apdu := []byte{0, byte(ins), p1, p2}
 
 	switch {
 	case lenData < apduShort && lenExpResp <= apduShort:
@@ -135,17 +136,19 @@ func (c *Card) communicate(cla byte, ins iso.Instruction, p1, p2 byte, data []by
 	return resp, nil
 }
 
-func (c *Card) send(cla byte, ins iso.Instruction, p1, p2 byte, data []byte) error {
-	_, err := c.communicate(cla, ins, p1, p2, data, 0)
+func (c *Card) send(ins iso.Instruction, p1, p2 byte, data []byte) error {
+	_, err := c.communicate(ins, p1, p2, data, 0)
 	return err
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.5 SELECT DATA
+//
+//nolint:unused
 func (c *Card) selectData(t iso.Tag, idx byte) error {
 	data := iso.EncodeTLV(0x60,
 		iso.EncodeTLV(0x5c, t.Bytes()))
 
-	return c.send(0x00, insSelectData, idx, 0x04, data)
+	return c.send(insSelectData, idx, 0x04, data)
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.6 GET DATA
@@ -155,14 +158,17 @@ func (c *Card) getData(t iso.Tag) ([]byte, error) {
 	p1 := byte(t >> 8)
 	p2 := byte(t)
 
-	return c.communicate(0x00, iso.InsGetData, p1, p2, nil, c.longer)
+	return c.communicate(iso.InsGetData, p1, p2, nil, c.longer)
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.7 GET NEXT DATA
-func (c *Card) getNextData(t iso.Tag) ([]byte, error) {
-	return c.communicate(0x00, insGetNextData, 0x7f, 0x21, nil, c.longer)
+//
+//nolint:unused
+func (c *Card) getNextData(_ iso.Tag) ([]byte, error) {
+	return c.communicate(insGetNextData, 0x7f, 0x21, nil, c.longer)
 }
 
+//nolint:unused
 func (c *Card) getDataIndex(t iso.Tag, i byte) ([]byte, error) {
 	if err := c.selectData(t, i); err != nil {
 		return nil, err
@@ -171,6 +177,7 @@ func (c *Card) getDataIndex(t iso.Tag, i byte) ([]byte, error) {
 	return c.getData(t)
 }
 
+//nolint:unused
 func (c *Card) getAllData(t iso.Tag) (datas [][]byte, err error) {
 	var data []byte
 	getData := c.getData
@@ -194,16 +201,18 @@ func (c *Card) getAllData(t iso.Tag) (datas [][]byte, err error) {
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.8 PUT DATA
+//
+//nolint:unused
 func (c *Card) putData(t iso.Tag, data []byte) error {
 	p1 := byte(t >> 8)
 	p2 := byte(t)
 
-	return c.send(0x00, iso.InsPutData, p1, p2, data)
+	return c.send(iso.InsPutData, p1, p2, data)
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.1 SELECT
 func (c *Card) Select() error {
-	return c.send(0x00, iso.InsSelect, 0x04, 0x00, appID)
+	return c.send(iso.InsSelect, 0x04, 0x00, appID)
 }
 
 func (c *Card) GetApplicationRelatedData() (ar ApplicationRelated, err error) {
@@ -235,21 +244,21 @@ func (c *Card) GetCardholder() (ch Cardholder, err error) {
 
 // See: OpenPGP Smart Card Application - Section 7.2.15 GET CHALLENGE
 func (c *Card) GetChallenge(cnt int) ([]byte, error) {
-	return c.communicate(0x00, iso.InsGetChallenge, 0x00, 0x00, nil, cnt)
+	return c.communicate(iso.InsGetChallenge, 0x00, 0x00, nil, cnt)
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.10 PSO: COMPUTE DIGITAL SIGNATURE
-func (c *Card) Sign(data []byte) ([]byte, error) {
+func (c *Card) Sign(_ []byte) ([]byte, error) {
 	return nil, nil // TODO
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.12 PSO: ENCIPHER
-func (c *Card) Encipher(data []byte) ([]byte, error) {
+func (c *Card) Encipher(_ []byte) ([]byte, error) {
 	return nil, nil // TODO
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.11 PSO: DECIPHER
-func (c *Card) Decipher(data []byte) ([]byte, error) {
+func (c *Card) Decipher(_ []byte) ([]byte, error) {
 	return nil, nil // TODO
 }
 
@@ -259,7 +268,7 @@ func (c *Card) CalculateSharedSecret(pk []byte) ([]byte, error) {
 		iso.EncodeTLV(tagPublicKey,
 			iso.EncodeTLV(tagExternalPublicKey, pk)))
 
-	return c.communicate(0x00, iso.InsPerformSecurityOperation, 0x80, 0x86, data, c.longer)
+	return c.communicate(iso.InsPerformSecurityOperation, 0x80, 0x86, data, c.longer)
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.14 GENERATE ASYMMETRIC KEY PAIR
@@ -270,12 +279,12 @@ func (c *Card) GenerateKeyPair() error {
 // See: OpenPGP Smart Card Application - Section 7.2.16 TERMINATE DF
 func (c *Card) terminate() error {
 	// TODO: Check if supported in Life Cycle Status indicator in Historical bytes
-	return c.send(0x00, iso.InsTerminateDF, 0x00, 0x00, nil)
+	return c.send(iso.InsTerminateDF, 0x00, 0x00, nil)
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.17 ACTIVATE FILE
 func (c *Card) activate() error {
-	return c.send(0x00, iso.InsActivateFile, 0x00, 0x00, nil)
+	return c.send(iso.InsActivateFile, 0x00, 0x00, nil)
 }
 
 // See: OpenPGP Smart Card Application - Section
@@ -294,16 +303,16 @@ func (c *Card) ManageSecurityEnvironment(crt byte, slot Slot) error {
 	// TODO: Check if MSE is supported in extended capabilities
 
 	keyRef := []byte{0x83, 0x01, byte(slot)}
-	return c.send(0x00, iso.InsManageSecurityEnvironment, 0x41, crt, keyRef)
+	return c.send(iso.InsManageSecurityEnvironment, 0x41, crt, keyRef)
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.2 VERIFY
 func (c *Card) VerifyPassword(pwType byte, pw string) (err error) {
 	if len(pw) == 0 {
-		return c.send(0x00, iso.InsVerify, 0x00, pwType, nil)
-	} else {
-		return c.send(0x00, iso.InsVerify, 0xff, pwType, []byte(pw))
+		return c.send(iso.InsVerify, 0x00, pwType, nil)
 	}
+
+	return c.send(iso.InsVerify, 0xff, pwType, []byte(pw))
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.3 CHANGE REFERENCE DATA
@@ -319,7 +328,7 @@ func (c *Card) ChangePassword(pwType byte, pwActual, pwNew string) error {
 		}
 	}
 
-	return c.send(0x00, iso.InsChangeReferenceData, 0x00, pwType, []byte(pwActual+pwNew))
+	return c.send(iso.InsChangeReferenceData, 0x00, pwType, []byte(pwActual+pwNew))
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.4 RESET RETRY COUNTER
@@ -328,7 +337,7 @@ func (c *Card) ResetRetryCounter(pw string) error {
 		return errInvalidLength
 	}
 
-	return c.send(0x00, iso.InsResetRetryCounter, 0x02, PW1, []byte(pw))
+	return c.send(iso.InsResetRetryCounter, 0x02, PW1, []byte(pw))
 }
 
 // See: OpenPGP Smart Card Application - Section 7.2.4 RESET RETRY COUNTER
@@ -337,7 +346,7 @@ func (c *Card) ResetRetryCounterWithResetCode(pw, rc string) error {
 		return errInvalidLength
 	}
 
-	return c.send(0x00, iso.InsResetRetryCounter, 0x00, PW1, []byte(rc+pw))
+	return c.send(iso.InsResetRetryCounter, 0x00, PW1, []byte(rc+pw))
 }
 
 func decodeResponse(resp []byte) (data []byte, sw1 byte, sw2 byte) {

@@ -8,18 +8,19 @@ import (
 	"crypto/rand"
 	"testing"
 
-	"cunicu.li/hawkes/ecdh"
-	"cunicu.li/hawkes/ecdh/sw"
-	"cunicu.li/hawkes/handshake"
 	"github.com/katzenpost/nyquist"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
+
+	"cunicu.li/hawkes/ecdh"
+	"cunicu.li/hawkes/ecdh/sw"
+	"cunicu.li/hawkes/handshake"
 )
 
 func TestHandshake(t *testing.T) {
 	require := require.New(t)
 
-	p1, p2 := handshake.NewInprocessPipe()
+	p1, p2 := handshake.NewInProcessPipe()
 
 	kp1, err := sw.P256.GenerateKeypair(rand.Reader)
 	require.NoError(err)

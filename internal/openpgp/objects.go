@@ -124,7 +124,6 @@ func (h *HistoricalBytes) Decode(b []byte) (err error) {
 		}
 
 	default:
-
 	}
 
 	return nil
@@ -430,11 +429,8 @@ func (sst *SecuritySupportTemplate) Decode(b []byte) (err error) {
 		}
 
 		switch t {
-
 		case tagSignatureCounter:
-			for i := 0; i < len(w); i++ {
-				sst.SignatureCounter[i] = w[i]
-			}
+			copy(sst.SignatureCounter[:], w)
 
 		case tagCert:
 			log.Println(hex.EncodeToString(w))

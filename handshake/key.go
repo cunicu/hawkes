@@ -19,15 +19,15 @@ type Key struct {
 	Key      []byte
 }
 
-func (id *Key) PrivateKey() (ecdh.PrivateKey, error) {
+func (k *Key) PrivateKey() (ecdh.PrivateKey, error) {
 	return nil, errors.ErrUnsupported
 }
 
-func (i *Key) MarshalText() ([]byte, error) {
-	return []byte(i.String()), nil
+func (k *Key) MarshalText() ([]byte, error) {
+	return []byte(k.String()), nil
 }
 
-func (i *Key) UnmarshalText(t []byte) (err error) {
+func (k *Key) UnmarshalText(t []byte) (err error) {
 	s := string(t)
 
 	parts := strings.Split(s, "_")
@@ -47,18 +47,18 @@ func (i *Key) UnmarshalText(t []byte) (err error) {
 	}
 
 	protocol := strings.Join(parts[:protoParts], "_")
-	if i.Protocol, err = ParseProtocol(protocol); err != nil {
+	if k.Protocol, err = ParseProtocol(protocol); err != nil {
 		return fmt.Errorf("%w: %w", ErrParse, err)
 	}
 
 	key := parts[protoParts]
-	if i.Key, err = base64.StdEncoding.DecodeString(key); err != nil {
+	if k.Key, err = base64.StdEncoding.DecodeString(key); err != nil {
 		return fmt.Errorf("%w: %w", ErrParse, err)
 	}
 
 	return nil
 }
 
-func (i *Key) String() string {
-	return fmt.Sprintf("%s_%s", i.Protocol, base64.StdEncoding.EncodeToString(i.Key))
+func (k *Key) String() string {
+	return fmt.Sprintf("%s_%s", k.Protocol, base64.StdEncoding.EncodeToString(k.Key))
 }

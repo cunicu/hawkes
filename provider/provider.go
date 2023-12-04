@@ -9,8 +9,9 @@ import (
 	"encoding/base64"
 	"errors"
 
-	"cunicu.li/hawkes/ecdh"
 	"github.com/katzenpost/nyquist/dh"
+
+	"cunicu.li/hawkes/ecdh"
 )
 
 var (

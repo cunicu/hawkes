@@ -7,16 +7,19 @@ import (
 	"fmt"
 )
 
+//nolint:unused
 type openpgpSlotRef struct {
 	SerialNo int `koanf:"serial_no"`
 	Slot     int `koanf:"slot"`
 }
 
+//nolint:unused
 func (s *openpgpSlotRef) MarshalText() (text []byte, err error) {
 	str := fmt.Sprintf("ecdh:%s:sk:openpgp:%d:%d", "Secp256r1", s.SerialNo, s.Slot)
 	return []byte(str), nil
 }
 
+//nolint:unused
 func (s *openpgpSlotRef) UnmarshalText(text []byte) error {
 	var curve string
 	if n, err := fmt.Sscanf(string(text), "ecdh:%s:sk:openpgp:%d:%d", &curve, &s.SerialNo, &s.Slot); err != nil {

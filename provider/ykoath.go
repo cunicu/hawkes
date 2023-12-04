@@ -10,13 +10,14 @@ import (
 	"log/slog"
 	"os"
 
-	"cunicu.li/hawkes/hmac/ykoath"
 	"github.com/ebfe/scard"
+
+	"cunicu.li/hawkes/hmac/ykoath"
 )
 
 var _ PrivateKeyHMAC = (*ykoathKey)(nil)
 
-var idChallenge = []byte("hawkes/v1")
+const idChallenge = "hawkes/v1"
 
 type ykoathKey struct {
 	provider *ykoathProvider
@@ -160,7 +161,7 @@ func (p *ykoathProvider) nameByID(id KeyID) (string, error) {
 }
 
 func (p *ykoathProvider) keyID(name string) (KeyID, error) {
-	key, _, err := p.CalculateHOTP(name, idChallenge)
+	key, _, err := p.CalculateHOTP(name, []byte(idChallenge))
 	if err != nil {
 		return nil, err
 	}
