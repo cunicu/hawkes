@@ -7,10 +7,11 @@ import (
 	"os"
 	"testing"
 
-	"cunicu.li/hawkes/internal/openpgp"
 	"github.com/ebfe/scard"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
+
+	"cunicu.li/hawkes/internal/openpgp"
 )
 
 func TestCard(t *testing.T) {

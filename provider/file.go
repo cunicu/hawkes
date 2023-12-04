@@ -15,8 +15,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"cunicu.li/hawkes/ecdh/sw"
 	"github.com/katzenpost/nyquist/dh"
+
+	"cunicu.li/hawkes/ecdh/sw"
 )
 
 var (

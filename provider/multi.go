@@ -63,10 +63,10 @@ func NewProvider(cfg MultiProviderConfig) (p *MultiProvider, err error) {
 		return nil, fmt.Errorf("failed to get trusted platform modules: %w", err)
 	}
 
-	for name, new := range providers {
-		switch new := new.(type) {
+	for name, ctor := range providers {
+		switch ctor := ctor.(type) {
 		case newProviderStd:
-			provider, err := new()
+			provider, err := ctor()
 			if err != nil {
 				return nil, fmt.Errorf("failed to create %s provider: %w", name, err)
 			}
@@ -75,7 +75,7 @@ func NewProvider(cfg MultiProviderConfig) (p *MultiProvider, err error) {
 
 		case newProviderSCard:
 			for _, card := range p.cards {
-				provider, err := new(card)
+				provider, err := ctor(card)
 				if err != nil {
 					return nil, fmt.Errorf("failed to create %s provider: %w", name, err)
 				}
@@ -85,7 +85,7 @@ func NewProvider(cfg MultiProviderConfig) (p *MultiProvider, err error) {
 
 		case NewProviderTPM:
 			for _, tpm := range p.tpms {
-				provider, err := new(tpm)
+				provider, err := ctor(tpm)
 				if err != nil {
 					return nil, fmt.Errorf("failed to create %s provider: %w", name, err)
 				}
@@ -101,7 +101,7 @@ func NewProvider(cfg MultiProviderConfig) (p *MultiProvider, err error) {
 func (p *MultiProvider) Close() error {
 	for _, card := range p.cards {
 		if err := card.Disconnect(scard.LeaveCard); err != nil {
-			return nil
+			return err
 		}
 	}
 
@@ -127,7 +127,7 @@ func (p *MultiProvider) Keys() (allKeys []KeyID, err error) {
 	return allKeys, nil
 }
 
-func (p *MultiProvider) CreateKey(label string) (KeyID, error) {
+func (p *MultiProvider) CreateKey(_ /*label*/ string) (KeyID, error) {
 	return nil, errors.ErrUnsupported
 }
 

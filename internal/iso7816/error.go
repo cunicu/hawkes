@@ -9,6 +9,8 @@ import (
 )
 
 // Code encapsulates (some) response codes from the spec
+//
+//nolint:errname
 type Code []byte
 
 // Error return the encapsulated error string

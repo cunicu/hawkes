@@ -7,15 +7,18 @@ import (
 	"fmt"
 )
 
+//nolint:unused
 type tpm2SlotRef struct {
 	Device string `koanf:"device"`
 }
 
+//nolint:unused
 func (s *tpm2SlotRef) MarshalText() (text []byte, err error) {
 	str := fmt.Sprintf("ecdh:%s:sk:tpm2:%s", "Secp256r1", s.Device)
 	return []byte(str), nil
 }
 
+//nolint:unused
 func (s *tpm2SlotRef) UnmarshalText(text []byte) (err error) {
 	var curve string
 	if n, err := fmt.Sscanf(string(text), "ecdh:%s:sk:tpm2:%s", &curve, &s.Device); err != nil {

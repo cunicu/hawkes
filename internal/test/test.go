@@ -8,11 +8,13 @@ import (
 	"encoding/base64"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"cunicu.li/hawkes/ecdh"
 	"cunicu.li/hawkes/ecdh/sw"
-	"github.com/stretchr/testify/require"
 )
 
+//nolint:revive
 func TestKeypair(t *testing.T, skAlice ecdh.PrivateKey) {
 	require := require.New(t)
 

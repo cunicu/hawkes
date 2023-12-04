@@ -4,9 +4,9 @@
 
 //go:build darwin
 
-//nolint:gci
-
 // Package sw provides an ECDH implementation backed by an Apple Secure Enclave.
+//
+//nolint:gci
 package applese
 
 import (

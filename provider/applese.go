@@ -11,6 +11,8 @@ import (
 	se "cunicu.li/hawkes/ecdh/applese"
 )
 
+var ErrKeyNotFound = errors.New("key not found")
+
 var _ PrivateKeyDH = (*appleSecureEnclaveKey)(nil)
 
 type appleSecureEnclaveKey struct {
@@ -88,7 +90,7 @@ func (p *appleSecureEnclaveProvider) DestroyKey(id KeyID) error {
 	}
 
 	if !ok {
-		return errors.New("key not found")
+		return ErrKeyNotFound
 	}
 
 	return nil

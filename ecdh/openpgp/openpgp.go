@@ -5,20 +5,18 @@
 package openpgp
 
 import (
-	"errors"
+	"github.com/katzenpost/nyquist/dh"
 
 	"cunicu.li/hawkes/ecdh"
-	"github.com/katzenpost/nyquist/dh"
 )
 
 // See: https://gnupg.org/ftp/specs/OpenPGP-smart-card-application-3.4.1.pdf
 // Based-on: https://git.sr.ht/~arx10/openpgpcard-x25519-agent
 
-var errNotSupported = errors.New("not supported")
-
 var _ ecdh.PrivateKey = (*PrivateKey)(nil)
 
 type PrivateKey struct {
+	//nolint:unused
 	publicKey *ecdh.PublicKey
 }
 

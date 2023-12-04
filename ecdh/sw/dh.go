@@ -9,8 +9,9 @@ import (
 	"fmt"
 	"io"
 
-	ecdhx "cunicu.li/hawkes/ecdh"
 	"github.com/katzenpost/nyquist/dh"
+
+	ecdhx "cunicu.li/hawkes/ecdh"
 )
 
 //nolint:gochecknoglobals

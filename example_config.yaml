@@ -1,0 +1,45 @@
+---
+# SPDX-FileCopyrightText: 2023 Steffen Vogel <post@steffenvogel.de>
+# SPDX-License-Identifier: Apache-2.0
+
+interface:
+  wg0:
+    private_keys:
+
+    - type: OATH-OTP
+      hash: SHA256
+      timestep: 1m
+      id: etYgGvxbpwSJH67Z/5Lb0KorJn4kIsUj6jEdwD+Eyhs=
+
+    - type: Noise
+      dh: Secp256r1
+      cipher: ChaChaPoly
+      hash: BLAKE2s
+      id:
+
+    - protocol: Noise_Secp256r1_ChaChaPoly_BLAKE2s
+      id: 
+
+    - OATH-TOTP_SHA256_1m_YKOATH_12345678:cunicu1
+    - Noise_Secp256r1_ChaChaPoly_BLAKE2s_AppleSE_GXAKdUZajcXpa8AeE/78Fy6fRSU=
+    - Rosenpass_/path/so/my/secret
+    - WireGuard_ObwgdqtgkaIJ5L1v6JYDR+4yElUV0EgVhcudSF1pAgQ=
+
+    - protocol: Rosenpass
+      provider: file
+      file: /bla/blub.key
+
+    peers:
+      test:
+        public_keys:
+
+        - protocol: WireGuard
+          key: ObwgdqtgkaIJ5L1v6JYDR+4yElUV0EgVhcudSF1pAgQ=
+          file: 
+          provider: 
+          slot:
+
+        - Rosenpass_/some/file.pub
+        - Noise_Secp256r1_ChaChaPoly_BLAKE2s_UkcKhQMmWQh2TBcytBa8a1qGxoNzZ/JFmv7/lpNl0RU=
+        - WireGuard_ObwgdqtgkaIJ5L1v6JYDR+4yElUV0EgVhcudSF1pAgQ=
+

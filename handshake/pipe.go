@@ -5,23 +5,23 @@ package handshake
 
 import "io"
 
-var _ io.ReadWriter = (*InprocessPipe)(nil)
+var _ io.ReadWriter = (*InProcessPipe)(nil)
 
-type InprocessPipe struct {
+type InProcessPipe struct {
 	*io.PipeReader
 	*io.PipeWriter
 }
 
-func NewInprocessPipe() (*InprocessPipe, *InprocessPipe) {
+func NewInProcessPipe() (*InProcessPipe, *InProcessPipe) {
 	rd1, wr1 := io.Pipe()
 	rd2, wr2 := io.Pipe()
 
-	c1 := &InprocessPipe{
+	c1 := &InProcessPipe{
 		PipeReader: rd1,
 		PipeWriter: wr2,
 	}
 
-	c2 := &InprocessPipe{
+	c2 := &InProcessPipe{
 		PipeReader: rd2,
 		PipeWriter: wr1,
 	}

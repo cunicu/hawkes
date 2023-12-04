@@ -17,7 +17,7 @@ import (
 	"github.com/katzenpost/nyquist/pattern"
 )
 
-//nolint:gochecknoglobals
+//nolint:gochecknoglobals,unused
 var protocol = nyquist.Protocol{
 	Pattern: pattern.XX,
 	Cipher:  cipher.ChaChaPoly,
@@ -76,11 +76,11 @@ func (hs *NoiseHandshake) Secret(_ context.Context) (ss Secret, err error) {
 		fmt.Printf("%p Pre-Read\n", hs)
 
 		msg = make([]byte, 1500)
-		if n, err := hs.rw.Read(msg); err != nil {
+		n, err := hs.rw.Read(msg)
+		if err != nil {
 			return nil, fmt.Errorf("failed to receive message: %w", err)
-		} else {
-			msg = msg[:n]
 		}
+		msg = msg[:n]
 
 		fmt.Printf("%p Read: %s\n", hs, hex.EncodeToString(msg))
 

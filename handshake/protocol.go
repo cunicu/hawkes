@@ -18,11 +18,13 @@ import (
 
 var ErrUnsupportedHashAlgorithm = errors.New("unsupported hash algorithm")
 
+//nolint:gochecknoglobals
 var DefaultOathTotpProtocol = &OathTotpProtocol{
 	Hash:     hash.SHA256,
 	Timestep: time.Minute,
 }
 
+//nolint:gochecknoglobals
 var WireGuardProtocol = &nyquist.Protocol{
 	Pattern: pattern.IK,
 	DH:      dh.X25519,
