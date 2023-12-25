@@ -9,7 +9,7 @@ require (
 	github.com/google/go-tpm v0.9.0
 	github.com/katzenpost/nyquist v0.0.2
 	github.com/miekg/pkcs11 v1.1.2-0.20230621133335-e678cf59e528
-	golang.org/x/crypto v0.16.0
+	golang.org/x/crypto v0.17.0
 	golang.org/x/sync v0.5.0
 	gopkg.in/yaml.v3 v3.0.1
 )
