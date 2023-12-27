@@ -8,7 +8,7 @@ require (
 	github.com/ebfe/scard v0.0.0-20230420082256-7db3f9b7c8a7
 	github.com/google/go-tpm v0.9.0
 	github.com/katzenpost/nyquist v0.0.2
-	github.com/miekg/pkcs11 v1.1.2-0.20230621133335-e678cf59e528
+	github.com/miekg/pkcs11 v1.1.2-0.20231115102856-9078ad6b9d4b
 	golang.org/x/crypto v0.17.0
 	golang.org/x/sync v0.5.0
 	gopkg.in/yaml.v3 v3.0.1
