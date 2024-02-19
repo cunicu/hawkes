@@ -7,7 +7,7 @@ require (
 	cunicu.li/go-ykoath/v2 v2.0.1
 	github.com/ebfe/scard v0.0.0-20230420082256-7db3f9b7c8a7
 	github.com/google/go-tpm v0.9.0
-	github.com/katzenpost/nyquist v0.0.6
+	github.com/katzenpost/nyquist v0.0.8
 	github.com/miekg/pkcs11 v1.1.2-0.20231115102856-9078ad6b9d4b
 	golang.org/x/crypto v0.19.0
 	golang.org/x/sync v0.6.0
@@ -23,7 +23,8 @@ require (
 	github.com/go-faster/xor v1.0.0 // indirect
 	github.com/katzenpost/chacha20 v0.0.0-20190910113340-7ce890d6a556 // indirect
 	github.com/katzenpost/circl v1.3.8-0.20240208050109-5fb03bb61607 // indirect
-	github.com/katzenpost/hpqc v0.0.4 // indirect
+	github.com/katzenpost/hpqc v0.0.6 // indirect
+	github.com/katzenpost/mlkem768 v0.0.1 // indirect
 	github.com/katzenpost/sntrup4591761 v0.0.0-20231024131303-8755eb1986b8 // indirect
 	github.com/mattn/go-pointer v0.0.1 // indirect
 	github.com/oasislabs/deoxysii v0.0.0-20190807103041-6159f99c2236 // indirect
