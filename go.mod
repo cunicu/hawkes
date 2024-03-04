@@ -17,7 +17,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require github.com/stretchr/testify v1.8.4 // test-only
+require github.com/stretchr/testify v1.9.0 // test-only
 
 require (
 	codeberg.org/vula/highctidh v1.0.2024012400 // indirect
@@ -33,7 +33,7 @@ require (
 	github.com/oasislabs/deoxysii v0.0.0-20190807103041-6159f99c2236 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rfjakob/eme v1.1.2 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	gitlab.com/yawning/bsaes.git v0.0.0-20190805113838-0a714cd429ec // indirect
 	gitlab.com/yawning/slice.git v0.0.0-20190714152416-bc4ae2510529 // indirect
 	golang.org/x/sys v0.17.0 // indirect
