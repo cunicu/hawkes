@@ -3,6 +3,6 @@ Upstream-Name: go-token
 Upstream-Contact: Steffen Vogel <post@steffenvogel.de>
 Source: https://github.com/cunicu/go-token
 
-Files: go.sum .renovaterc.json */testdata/* *.drawio *.svg
+Files: go.sum .renovaterc.json */testdata/** */mockdata/** *.drawio *.svg flake.lock
 Copyright: 2023 Steffen Vogel <post@steffenvogel.de>
 License: Apache-2.0
