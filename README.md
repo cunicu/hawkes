@@ -130,9 +130,9 @@ _hawkes_ uses protocol identifiers to describe the handshake protocol which shou
 
 ![Types](docs/types.svg)
 
-## Authors
+## Contact
 
-- Steffen Vogel ([@stv0g](https://github.com/stv0g))
+Please have a look at the contact page: [cunicu.li/docs/contact](https://cunicu.li/docs/contact).
 
 ## License
 
