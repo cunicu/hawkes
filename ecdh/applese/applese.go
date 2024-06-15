@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Steffen Vogel <post@steffenvogel.de>
+// SPDX-FileCopyrightText: 2023-2024 Steffen Vogel <post@steffenvogel.de>
 // SPDX-FileCopyrightText: 2023 Meta Platforms, Inc. and affiliates.
 // SPDX-License-Identifier: Apache-2.0
 
