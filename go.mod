@@ -3,7 +3,7 @@
 
 module cunicu.li/hawkes
 
-go 1.22.2
+go 1.23.3
 
 require (
 	cunicu.li/go-iso7816 v0.8.0
