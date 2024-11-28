@@ -28,6 +28,7 @@ func (s *openpgpSlotRef) UnmarshalText(text []byte) error {
 		return ErrParse
 	}
 
+	//nolint:goconst
 	switch curve {
 	case "Secp256r1":
 	default:

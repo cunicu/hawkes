@@ -33,6 +33,8 @@ func (k *Key) UnmarshalText(t []byte) (err error) {
 	parts := strings.Split(s, "_")
 
 	var protoParts int
+
+	//nolint:goconst
 	switch parts[0] {
 	case "Noise", "WireGuard":
 		protoParts = 5

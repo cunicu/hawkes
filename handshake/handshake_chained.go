@@ -27,9 +27,6 @@ func (cp ChainedHandshake) Secret(ctx context.Context) (s Secret, err error) {
 	res := make([]Secret, len(cp))
 
 	for i, p := range cp {
-		i := i
-		p := p
-
 		group.Go(func() (err error) {
 			res[i], err = p.Secret(ctx)
 			return err
