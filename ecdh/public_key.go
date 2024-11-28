@@ -19,6 +19,7 @@ var _ dh.PublicKey = (*PublicKey)(nil)
 var (
 	ErrUnsupportedCurve = errors.New("unsupported curve")
 	ErrUnmarshal        = errors.New("failed to unmarshal key")
+	ErrParse            = errors.New("failed to parse")
 )
 
 type PublicKey struct {
@@ -39,19 +40,19 @@ func (pk *PublicKey) UnmarshalText(text []byte) error {
 	var curveName, keyStr string
 
 	if n, err := fmt.Sscanf(string(text), "ecdh:%s:pk:%s", &curveName, &keyStr); err != nil {
-		return fmt.Errorf("failed to parse: %w", err)
+		return fmt.Errorf("%w: %w", ErrParse, err)
 	} else if n != 1 {
-		return fmt.Errorf("failed to parse")
+		return ErrParse
 	}
 
 	curve := curveFromName(curveName)
 	if curve == nil {
-		return fmt.Errorf("unsupported curve: %s", curveName)
+		return fmt.Errorf("%w: %s", ErrUnsupportedCurve, curveName)
 	}
 
 	key, err := base64.StdEncoding.DecodeString(keyStr)
 	if err != nil {
-		return fmt.Errorf("failed to parse: %w", err)
+		return fmt.Errorf("%w: %w", ErrParse, err)
 	}
 
 	pk.PublicKey, err = curve.NewPublicKey(key)
@@ -81,6 +82,7 @@ func (pk *PublicKey) ECDSA() (*ecdsa.PublicKey, error) {
 		return nil, fmt.Errorf("%w: %v", ErrUnsupportedCurve, pk.Curve())
 	}
 
+	//nolint:staticcheck
 	x, y := elliptic.Unmarshal(curve, pk.Bytes())
 	if x == nil {
 		return nil, ErrUnmarshal

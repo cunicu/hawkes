@@ -141,6 +141,7 @@ type ApplicationRelated struct {
 	Keys [4]KeyInfo
 }
 
+//nolint:gocognit
 func (ar *ApplicationRelated) Decode(b []byte) (err error) {
 	var v, w, x []byte
 	var t iso.Tag
