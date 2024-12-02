@@ -6,7 +6,7 @@ module cunicu.li/hawkes
 go 1.23.3
 
 require (
-	cunicu.li/go-iso7816 v0.8.0
+	cunicu.li/go-iso7816 v0.8.1
 	cunicu.li/go-ykoath/v2 v2.1.6
 	github.com/ebfe/scard v0.0.0-20230420082256-7db3f9b7c8a7
 	github.com/google/go-tpm v0.9.1
