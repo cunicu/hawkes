@@ -2,8 +2,12 @@ codeberg.org/vula/highctidh v1.0.2024012400 h1:W0vCA6HbtfONz3nQcfjFdrrO3dcFJTjYk
 codeberg.org/vula/highctidh v1.0.2024012400/go.mod h1:admvznk7GhsrDih/BMy7jbIv9Y86U9vj7S5FVoquF/g=
 cunicu.li/go-iso7816 v0.8.0 h1:EEQ9hAbdIbTUM0uVrWbfGnQnFjA3P/VoNj1GM71Tf5w=
 cunicu.li/go-iso7816 v0.8.0/go.mod h1:gSG/jc0iH2bykUasCbyIfnI1PFotnm76Gmk1bc7UFEg=
+cunicu.li/go-iso7816 v0.8.1 h1:3kgjW+iCwkw6DtLDh5aKUQfwpwd0zoHHyPxyDS9t7HU=
+cunicu.li/go-iso7816 v0.8.1/go.mod h1:bt5Uo0kVcv8+wbIaMdWw3YrcwdhGEDCu/arp7dsHuTY=
 cunicu.li/go-ykoath/v2 v2.1.6 h1:5FGr9L3KYcOh+pbBg1nfwPAwm/rBBp48869tmEuWi7I=
 cunicu.li/go-ykoath/v2 v2.1.6/go.mod h1:UtwdnJ5Dbku9cT20Aj77OAXKNkqtbGoxrhHF7oCkNlM=
+cunicu.li/go-ykoath/v2 v2.1.8 h1:8huFepHBJoK1nWVewihCihqFr2k2TfevXHeg+Jyph6Y=
+cunicu.li/go-ykoath/v2 v2.1.8/go.mod h1:DX8LVg6W1vYPJ6VqweAMMNj3Rj0GFdsWbN1P3WyuKcE=
 filippo.io/mlkem768 v0.0.0-20240221181710-5ce91625fdc1 h1:xbdqh5aDZeO0XqW896qVjKnAqRji9nkIwmsBEEbCA10=
 filippo.io/mlkem768 v0.0.0-20240221181710-5ce91625fdc1/go.mod h1:mIEHrcJ2xBlJRQwnRO0ujmZ+Rt6m6eNeCPq8E3Wkths=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
