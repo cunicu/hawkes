@@ -12,7 +12,7 @@ require (
 	github.com/google/go-tpm v0.9.1
 	github.com/katzenpost/nyquist v0.0.10
 	github.com/miekg/pkcs11 v1.1.2-0.20231115102856-9078ad6b9d4b
-	golang.org/x/crypto v0.29.0
+	golang.org/x/crypto v0.30.0
 	golang.org/x/sync v0.10.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -36,5 +36,5 @@ require (
 	github.com/stretchr/objx v0.5.2 // indirect
 	gitlab.com/yawning/bsaes.git v0.0.0-20190805113838-0a714cd429ec // indirect
 	gitlab.com/yawning/x448.git v0.0.0-20221003101044-617eb9b7d9b7 // indirect
-	golang.org/x/sys v0.27.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
 )
