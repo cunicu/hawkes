@@ -6,13 +6,13 @@ module cunicu.li/hawkes
 go 1.23.3
 
 require (
-	cunicu.li/go-iso7816 v0.8.1
-	cunicu.li/go-ykoath/v2 v2.1.8
-	github.com/ebfe/scard v0.0.0-20230420082256-7db3f9b7c8a7
+	cunicu.li/go-iso7816 v0.8.3
+	cunicu.li/go-ykoath/v2 v2.1.12
+	github.com/ebfe/scard v0.0.0-20241214075232-7af069cabc25
 	github.com/google/go-tpm v0.9.1
 	github.com/katzenpost/nyquist v0.0.10
 	github.com/miekg/pkcs11 v1.1.2-0.20231115102856-9078ad6b9d4b
-	golang.org/x/crypto v0.30.0
+	golang.org/x/crypto v0.31.0
 	golang.org/x/sync v0.10.0
 	gopkg.in/yaml.v3 v3.0.1
 )
