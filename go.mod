@@ -12,7 +12,7 @@ require (
 	github.com/google/go-tpm v0.9.3
 	github.com/katzenpost/nyquist v0.0.10
 	github.com/miekg/pkcs11 v1.1.2-0.20231115102856-9078ad6b9d4b
-	golang.org/x/crypto v0.34.0
+	golang.org/x/crypto v0.35.0
 	golang.org/x/sync v0.11.0
 	gopkg.in/yaml.v3 v3.0.1
 )
