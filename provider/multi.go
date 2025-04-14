@@ -158,7 +158,7 @@ func (p *MultiProvider) openTPMs() (tpms []transport.TPMCloser, err error) {
 
 	if len(tpmDevPaths) == 0 {
 		// Find Windows TPM
-		tpm, err := transport.OpenTPM()
+		tpm, err := transport.OpenTPM() //nolint:staticcheck
 		if err != nil {
 			return nil, err
 		}
@@ -170,7 +170,7 @@ func (p *MultiProvider) openTPMs() (tpms []transport.TPMCloser, err error) {
 				continue
 			}
 
-			tpm, err := transport.OpenTPM(tpmDevPath)
+			tpm, err := transport.OpenTPM(tpmDevPath) //nolint:staticcheck
 			if err != nil {
 				return nil, err
 			}

@@ -71,7 +71,7 @@ func (kp *PrivateKey) DH(pk dh.PublicKey) ([]byte, error) {
 		return nil, fmt.Errorf("%w: %T", ErrInvalidPublicKeyType, pk)
 	}
 
-	return kp.PrivateKey.ECDH(ecpk.PublicKey)
+	return kp.ECDH(ecpk.PublicKey)
 }
 
 func (kp *PrivateKey) DropPrivate() {
@@ -79,5 +79,5 @@ func (kp *PrivateKey) DropPrivate() {
 }
 
 func (kp *PrivateKey) MarshalBinary() ([]byte, error) {
-	return kp.PrivateKey.Bytes(), nil
+	return kp.Bytes(), nil
 }

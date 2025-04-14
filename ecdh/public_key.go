@@ -65,7 +65,7 @@ func (pk *PublicKey) MarshalBinary() ([]byte, error) {
 }
 
 func (pk *PublicKey) UnmarshalBinary(data []byte) error {
-	curve := pk.PublicKey.Curve()
+	curve := pk.Curve()
 	ecpk, err := curve.NewPublicKey(data)
 	if err != nil {
 		return err
