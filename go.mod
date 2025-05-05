@@ -9,7 +9,7 @@ require (
 	cunicu.li/go-iso7816 v0.8.6
 	cunicu.li/go-ykoath/v2 v2.1.20
 	github.com/ebfe/scard v0.0.0-20241214075232-7af069cabc25
-	github.com/google/go-tpm v0.9.3
+	github.com/google/go-tpm v0.9.4
 	github.com/katzenpost/nyquist v0.0.10
 	github.com/miekg/pkcs11 v1.1.2-0.20231115102856-9078ad6b9d4b
 	golang.org/x/crypto v0.37.0
