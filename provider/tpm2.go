@@ -28,7 +28,7 @@ func (s *tpm2SlotRef) UnmarshalText(text []byte) (err error) {
 	}
 
 	switch curve {
-	case "Secp256r1":
+	case "Secp256r1": //nolint:goconst
 	default:
 		return fmt.Errorf("%w: %s", ErrUnsupportedCurve, curve)
 	}
