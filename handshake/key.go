@@ -36,11 +36,11 @@ func (k *Key) UnmarshalText(t []byte) (err error) {
 
 	//nolint:goconst
 	switch parts[0] {
-	case "Noise", "WireGuard":
+	case protocolNoise, protocolWireGuard:
 		protoParts = 5
-	case "OATH-HOTP":
+	case protocolOATHHOTP:
 		protoParts = 2
-	case "OATH-TOTP":
+	case protocolOATHTOTP:
 		protoParts = 3
 	}
 

@@ -18,6 +18,13 @@ import (
 
 var ErrUnsupportedHashAlgorithm = errors.New("unsupported hash algorithm")
 
+const (
+	protocolOATHTOTP  = "OATH-TOTP"
+	protocolOATHHOTP  = "OATH-HOTP"
+	protocolWireGuard = "WireGuard"
+	protocolNoise     = "Noise"
+)
+
 //nolint:gochecknoglobals
 var DefaultOathTotpProtocol = &OathTotpProtocol{
 	Hash:     hash.SHA256,
@@ -57,7 +64,7 @@ func ParseProtocol(s string) (Protocol, error) {
 	parts := strings.Split(s, "_")
 
 	switch parts[0] {
-	case "OATH-HOTP":
+	case protocolOATHHOTP:
 		if len(parts) < 2 {
 			return nil, ErrParse
 		}
@@ -71,7 +78,7 @@ func ParseProtocol(s string) (Protocol, error) {
 			Hash: hash,
 		}, nil
 
-	case "OATH-TOTP":
+	case protocolOATHTOTP:
 		if len(parts) < 3 {
 			return nil, ErrParse
 		}
@@ -93,10 +100,10 @@ func ParseProtocol(s string) (Protocol, error) {
 
 		return c, nil
 
-	case "WireGuard":
+	case protocolWireGuard:
 		return WireGuardProtocol, nil
 
-	case "Noise":
+	case protocolNoise:
 		return nyquist.NewProtocol(s)
 	}
 
@@ -134,7 +141,7 @@ func ParseProtocolFromMap(m map[string]any) (Protocol, error) {
 	}
 
 	switch protoStr {
-	case "OATH-TOTP":
+	case protocolOATHTOTP:
 		tsStr, ok := getStr(m, "timestep")
 		if !ok {
 			return nil, ErrParse
@@ -150,15 +157,15 @@ func ParseProtocolFromMap(m map[string]any) (Protocol, error) {
 			Timestep: ts,
 		}, nil
 
-	case "OATH-HOTP":
+	case protocolOATHHOTP:
 		return &OathHotpProtocol{
 			Hash: hash,
 		}, nil
 
-	case "WireGuard":
+	case protocolWireGuard:
 		return WireGuardProtocol, nil
 
-	case "Noise":
+	case protocolNoise:
 		patternStr, ok := getStr(m, "pattern")
 		if !ok {
 			return nil, ErrParse
